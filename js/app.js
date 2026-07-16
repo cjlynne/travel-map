@@ -78,7 +78,7 @@ function initMap() {
 
 async function loadData() {
   try {
-    const mapRes = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
+    const mapRes = await fetch('data/china.json');
     const provincesData = await mapRes.json();
 
     provinceLayer = L.geoJSON(provincesData, {
