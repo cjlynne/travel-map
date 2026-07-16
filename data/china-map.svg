@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <style>
+      .province {
+        fill: #E0E0E0;
+        stroke: #FFFFFF;
+        stroke-width: 2;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .province:hover {
+        opacity: 0.8;
+        stroke: #333;
+        stroke-width: 3;
+      }
+      .province.visited {
+        fill: #FF6B6B;
+      }
+      .province.wishlist {
+        fill: #F39C12;
+      }
+    </style>
+  </defs>
+
+  <!-- 中国地图简化版 - 各省份 -->
+  <!-- 北京 -->
+  <path id="北京" class="province" data-name="北京" d="M620,180 L640,175 L650,190 L645,205 L625,210 L610,200 L615,185 Z"/>
+
+  <!-- 天津 -->
+  <path id="天津" class="province" data-name="天津" d="M640,195 L660,190 L670,205 L665,220 L645,225 L630,215 L635,200 Z"/>
+
+  <!-- 河北 -->
+  <path id="河北" class="province" data-name="河北" d="M600,160 L650,150 L680,170 L690,200 L680,240 L640,260 L600,250 L580,220 L585,180 Z"/>
+
+  <!-- 山西 -->
+  <path id="山西" class="province" data-name="山西" d="M560,170 L600,160 L610,200 L600,250 L560,270 L530,250 L525,200 Z"/>
+
+  <!-- 内蒙古 -->
+  <path id="内蒙古" class="province" data-name="内蒙古" d="M400,100 L550,80 L620,100 L660,130 L650,150 L600,160 L560,170 L520,160 L450,150 L400,140 L380,120 Z"/>
+
+  <!-- 辽宁 -->
+  <path id="辽宁" class="province" data-name="辽宁" d="M650,130 L700,120 L730,140 L740,170 L720,200 L680,210 L650,195 L640,160 Z"/>
+
+  <!-- 吉林 -->
+  <path id="吉林" class="province" data-name="吉林" d="M700,100 L740,90 L770,110 L780,140 L760,170 L730,180 L700,170 L690,140 Z"/>
+
+  <!-- 黑龙江 -->
+  <path id="黑龙江" class="province" data-name="黑龙江" d="M720,60 L770,50 L800,70 L810,110 L790,150 L760,170 L740,160 L720,130 L700,100 L710,70 Z"/>
+
+  <!-- 上海 -->
+  <path id="上海" class="province" data-name="上海" d="M680,280 L700,275 L710,290 L705,305 L685,310 L670,300 L675,285 Z"/>
+
+  <!-- 江苏 -->
+  <path id="江苏" class="province" data-name="江苏" d="M650,260 L700,250 L720,270 L730,300 L710,330 L670,340 L640,320 L630,290 Z"/>
+
+  <!-- 浙江 -->
+  <path id="浙江" class="province" data-name="浙江" d="M680,320 L710,310 L730,330 L740,360 L720,390 L690,400 L660,380 L650,350 Z"/>
+
+  <!-- 安徽 -->
+  <path id="安徽" class="province" data-name="安徽" d="M640,300 L680,290 L700,310 L710,340 L690,370 L650,380 L620,360 L610,330 Z"/>
+
+  <!-- 福建 -->
+  <path id="福建" class="province" data-name="福建" d="M700,380 L730,370 L750,390 L760,420 L740,450 L710,460 L680,440 L670,410 Z"/>
+
+  <!-- 江西 -->
+  <path id="江西" class="province" data-name="江西" d="M660,380 L700,370 L720,390 L730,420 L710,450 L670,460 L640,440 L630,410 Z"/>
+
+  <!-- 山东 -->
+  <path id="山东" class="province" data-name="山东" d="M650,230 L700,220 L730,240 L740,270 L720,300 L680,310 L640,290 L630,260 Z"/>
+
+  <!-- 河南 -->
+  <path id="河南" class="province" data-name="河南" d="M580,280 L640,270 L660,290 L670,320 L650,350 L610,360 L580,340 L570,310 Z"/>
+
+  <!-- 湖北 -->
+  <path id="湖北" class="province" data-name="湖北" d="M540,320 L610,310 L640,330 L650,360 L630,390 L590,400 L560,380 L540,350 Z"/>
+
+  <!-- 湖南 -->
+  <path id="湖南" class="province" data-name="湖南" d="M560,380 L610,370 L640,390 L650,420 L630,450 L590,460 L560,440 L550,410 Z"/>
+
+  <!-- 广东 -->
+  <path id="广东" class="province" data-name="广东" d="M600,450 L660,440 L690,460 L700,490 L680,520 L640,530 L600,510 L590,480 Z"/>
+
+  <!-- 广西 -->
+  <path id="广西" class="province" data-name="广西" d="M500,480 L580,470 L610,490 L620,520 L600,550 L560,560 L520,540 L500,510 Z"/>
+
+  <!-- 海南 -->
+  <path id="海南" class="province" data-name="海南" d="M560,560 L590,555 L600,570 L595,585 L575,590 L555,580 L555,565 Z"/>
+
+  <!-- 重庆 -->
+  <path id="重庆" class="province" data-name="重庆" d="M500,350 L540,340 L560,360 L570,390 L550,420 L510,430 L490,410 L485,380 Z"/>
+
+  <!-- 四川 -->
+  <path id="四川" class="province" data-name="四川" d="M400,320 L500,310 L540,330 L560,360 L550,400 L510,430 L460,440 L420,420 L400,380 L395,350 Z"/>
+
+  <!-- 贵州 -->
+  <path id="贵州" class="province" data-name="贵州" d="M480,430 L540,420 L570,440 L580,470 L560,500 L520,510 L490,490 L475,460 Z"/>
+
+  <!-- 云南 -->
+  <path id="云南" class="province" data-name="云南" d="M380,450 L480,440 L510,460 L520,500 L500,540 L460,560 L400,550 L370,520 L365,480 Z"/>
+
+  <!-- 西藏 -->
+  <path id="西藏" class="province" data-name="西藏" d="M150,300 L350,280 L400,300 L420,340 L400,380 L350,400 L250,410 L180,390 L140,350 Z"/>
+
+  <!-- 陕西 -->
+  <path id="陕西" class="province" data-name="陕西" d="M520,200 L570,190 L590,220 L600,260 L580,300 L540,320 L510,300 L500,260 L510,230 Z"/>
+
+  <!-- 甘肃 -->
+  <path id="甘肃" class="province" data-name="甘肃" d="M350,180 L450,170 L520,190 L540,220 L520,260 L480,280 L420,290 L370,270 L340,240 L340,210 Z"/>
+
+  <!-- 青海 -->
+  <path id="青海" class="province" data-name="青海" d="M280,250 L380,240 L420,260 L440,300 L420,340 L380,360 L320,370 L280,350 L260,310 Z"/>
+
+  <!-- 宁夏 -->
+  <path id="宁夏" class="province" data-name="宁夏" d="M500,190 L530,185 L545,205 L540,225 L515,230 L500,215 Z"/>
+
+  <!-- 新疆 -->
+  <path id="新疆" class="province" data-name="新疆" d="M100,100 L300,80 L380,100 L400,140 L380,180 L340,200 L250,220 L150,230 L80,200 L60,150 Z"/>
+
+  <!-- 台湾 -->
+  <path id="台湾" class="province" data-name="台湾" d="M740,440 L760,435 L770,455 L765,475 L745,480 L735,465 Z"/>
+
+  <!-- 香港 -->
+  <path id="香港" class="province" data-name="香港" d="M650,520 L670,518 L675,530 L668,540 L652,538 L648,528 Z"/>
+
+  <!-- 澳门 -->
+  <path id="澳门" class="province" data-name="澳门" d="M630,530 L648,528 L652,540 L645,548 L632,545 L628,538 Z"/>
+</svg>

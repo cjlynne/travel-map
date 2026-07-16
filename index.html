@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中国旅行足迹地图</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+    html, body { height: 100%; overflow: hidden; }
+
+    /* 三栏布局 */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 { font-size: 1.3em; }
+    .header-actions { display: flex; gap: 8px; }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* 左侧用户栏 */
+    .left-panel {
+      width: 200px;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      padding: 12px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .user-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .user-item {
+      padding: 10px 12px;
+      margin: 5px 0;
+      border: 2px solid;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .user-item:hover { transform: translateX(3px); }
+    .user-item.active { color: white; }
+    .user-item .name { font-weight: 500; font-size: 14px; }
+    .user-item .del { font-size: 16px; opacity: 0.6; }
+    .user-item .del:hover { opacity: 1; }
+
+    .panel-footer {
+      padding: 10px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    /* 中间地图 */
+    .map-panel {
+      flex: 1;
+      position: relative;
+    }
+    #map { width: 100%; height: 100%; }
+
+    /* 右侧城市栏 */
+    .right-panel {
+      width: 260px;
+      background: white;
+      border-left: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .right-panel.hidden { display: none; }
+    .city-header {
+      padding: 12px;
+      background: #f0f7ff;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .city-header h3 { font-size: 15px; color: #333; margin: 0; }
+    .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }
+    .mode-hint {
+      padding: 8px 12px;
+      background: #fff3cd;
+      color: #856404;
+      font-size: 12px;
+      text-align: center;
+    }
+    .city-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .city-item {
+      padding: 10px 12px;
+      margin: 4px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .city-item:hover { border-color: #667eea; background: #f8f9ff; }
+    .city-item.visited { border-color: #FF6B6B; background: #fff5f5; }
+    .city-item.wishlist { border-color: #F39C12; background: #fff8e1; }
+    .city-status { font-size: 14px; width: 18px; text-align: center; }
+    .city-item.visited .city-status { color: #FF6B6B; }
+    .city-item.wishlist .city-status { color: #F39C12; }
+    .city-name { font-size: 13px; font-weight: 500; }
+
+    .empty-hint {
+      padding: 30px;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+    }
+
+    /* 模式切换 */
+    .mode-section {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      gap: 5px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      background: #f0f0f0;
+      color: #666;
+    }
+    .mode-btn.active { color: white; }
+    .mode-btn.visited.active { background: #FF6B6B; }
+    .mode-btn.wishlist.active { background: #F39C12; }
+
+    /* 底部统计 */
+    .footer {
+      background: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .stat { display: flex; align-items: center; gap: 6px; }
+    .stat-label { color: #666; }
+    .stat-value { font-weight: bold; font-size: 16px; }
+
+    /* 按钮 */
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-purple { background: #6f42c1; color: white; }
+    .btn-info { background: #17a2b8; color: white; }
+    .btn-warning { background: #fd7e14; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-block { width: 100%; }
+
+    /* 弹窗 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      min-width: 300px;
+    }
+    .modal-content h3 { margin-bottom: 15px; text-align: center; font-size: 16px; }
+    .modal-content input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .color-options { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
+    .color-option {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+    }
+    .color-option:hover { transform: scale(1.1); }
+    .color-option.selected { border-color: #333; }
+    .modal-buttons { display: flex; gap: 10px; }
+
+    .legend {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 11px;
+    }
+    .legend h4 { margin-bottom: 8px; font-size: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .legend-color { width: 16px; height: 12px; border-radius: 2px; }
+
+    .province-label {
+      background: rgba(255,255,255,0.95) !important;
+      padding: 4px 8px !important;
+      border-radius: 4px !important;
+      font-size: 12px !important;
+      font-weight: bold !important;
+      color: #333 !important;
+      white-space: nowrap !important;
+      border: 1px solid rgba(0,0,0,0.1) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+      pointer-events: none !important;
+      user-select: none !important;
+    }
+
+    .city-label {
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      white-space: nowrap !important;
+      pointer-events: none !important;
+      color: #333 !important;
+      background: transparent !important;
+      padding: 1px 3px !important;
+      border-radius: 2px !important;
+    }
+
+    .city-marker {
+      background: transparent !important;
+      border: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>🗺️ 中国旅行足迹地图</h1>
+      <div class="header-actions">
+        <button class="btn btn-info" onclick="exportData()">📤 导出</button>
+        <button class="btn btn-warning" onclick="document.getElementById('fileInput').click()">📥 导入</button>
+        <button class="btn btn-success" onclick="document.getElementById('mergeFileInput').click()">🔗 合并导入</button>
+        <button class="btn btn-danger" onclick="resetData()">🗑️ 重置</button>
+        <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importData(event)">
+        <input type="file" id="mergeFileInput" accept=".json" style="display:none" onchange="mergeImportData(event)">
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- 左侧：用户管理 -->
+      <div class="left-panel">
+        <div class="panel-header">👥 用户列表</div>
+        <div class="user-list" id="userList"></div>
+        <div class="panel-footer">
+          <button class="btn btn-success btn-block" onclick="showAddUserModal()">+ 添加用户</button>
+          <button class="btn btn-purple btn-block" style="margin-top:5px" onclick="showMergeModal()">🔗 合并模式</button>
+        </div>
+      </div>
+
+      <!-- 中间：地图 -->
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+
+      <!-- 右侧：城市列表 -->
+      <div class="right-panel hidden" id="rightPanel">
+        <div class="city-header">
+          <h3 id="cityTitle">选择省份</h3>
+          <button class="close-btn" onclick="closeSidebar()">×</button>
+        </div>
+        <div class="mode-section">
+          <button class="mode-btn visited active" data-mode="visited" onclick="setMode('visited')">✓ 去过</button>
+          <button class="mode-btn wishlist" data-mode="wishlist" onclick="setMode('wishlist')">★ 想去</button>
+        </div>
+        <div class="mode-section">
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+            <input type="checkbox" id="showLabels" checked onchange="toggleLabels()">
+            <span>显示名称</span>
+          </label>
+        </div>
+        <div class="mode-section">
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+            <input type="checkbox" id="showMarkers" checked onchange="toggleMarkers()">
+            <span>显示城市</span>
+          </label>
+        </div>
+        <div class="mode-hint">点击城市名称进行标记</div>
+        <div class="city-list" id="cityList">
+          <div class="empty-hint">请在地图上点击省份</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="stat">
+        <span class="stat-label">已访问:</span>
+        <span class="stat-value" id="visitedProvinceCount">0</span>
+        <span>个省市</span>
+        <span id="visitedProvincePercent">(0%)</span>
+        <span>|</span>
+        <span class="stat-value" id="visitedCityCount">0</span>
+        <span>个城市</span>
+        <span id="visitedCityPercent">(0%)</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">想去:</span>
+        <span class="stat-value" id="wishlistProvinceCount">0</span>
+        <span>个省市</span>
+        <span id="wishlistProvincePercent">(0%)</span>
+        <span>|</span>
+        <span class="stat-value" id="wishlistCityCount">0</span>
+        <span>个城市</span>
+        <span id="wishlistCityPercent">(0%)</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">当前省份:</span>
+        <span id="currentProvince" style="color:#667eea;font-weight:bold">未选择</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加用户弹窗 -->
+  <div class="modal" id="addUserModal">
+    <div class="modal-content">
+      <h3>添加新用户</h3>
+      <input type="text" id="newUserName" placeholder="请输入用户名" maxlength="10">
+      <div class="color-options" id="colorOptions">
+        <div class="color-option selected" data-color="#FF6B6B" style="background:#FF6B6B"></div>
+        <div class="color-option" data-color="#4ECDC4" style="background:#4ECDC4"></div>
+        <div class="color-option" data-color="#9B59B6" style="background:#9B59B6"></div>
+        <div class="color-option" data-color="#3498DB" style="background:#3498DB"></div>
+        <div class="color-option" data-color="#1ABC9C" style="background:#1ABC9C"></div>
+        <div class="color-option" data-color="#E74C3C" style="background:#E74C3C"></div>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="hideAddUserModal()">取消</button>
+        <button class="btn btn-success" onclick="addUser()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 合并模式弹窗 -->
+  <div class="modal" id="mergeModal">
+    <div class="modal-content">
+      <h3>选择两位用户合并</h3>
+      <div id="mergeUserList"></div>
+      <div class="modal-buttons" style="margin-top:15px">
+        <button class="btn btn-secondary" onclick="hideMergeModal()">取消</button>
+        <button class="btn btn-success" onclick="confirmMerge()">确认合并</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑用户弹窗 -->
+  <div class="modal" id="editUserModal">
+    <div class="modal-content">
+      <h3>修改用户名</h3>
+      <input type="text" id="editUserName" placeholder="请输入新用户名" maxlength="10">
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="hideEditUserModal()">取消</button>
+        <button class="btn btn-success" onclick="confirmEditUser()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
